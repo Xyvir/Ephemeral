@@ -131,16 +131,37 @@ def run_logic(icon):
         
         stdout, stderr = process.communicate(input=code)
         
-        if stderr:
-            # --- 2. PERSIST ON ERROR ---
+        # Check exit code to distinguish between "warnings/logs" and "failures"
+        if process.returncode != 0:
+            # --- 2. PERSIST ON ACTUAL ERROR ---
             # If there is an error, show the debug window and notify
-            show_error_window(stderr)
+            # Combine stdout/stderr because sometimes errors print to stdout too
+            full_error = f"Exit Code: {process.returncode}\n\nSTDERR:\n{stderr}\n\nSTDOUT:\n{stdout}"
+            show_error_window(full_error)
             icon.notify(f"Execution failed for {lang}. See debug window.", title="Ephemeral Error")
-            # Optionally still copy stdout if any? Usually on error we just want the debug info.
         else:
             # --- 3. AUTO-CLOSE ON SUCCESS ---
-            # Update clipboard silently and notify completion
+            
+            # Clean up Podman's pull logs from stderr so they don't clutter the clipboard
+            cleaned_stderr = ""
+            if stderr:
+                # Filter out lines that look like Podman image pull progress
+                ignore_keywords = [
+                    "Resolving ", "Trying to pull", "Getting image source", 
+                    "Copying blob", "Copying config", "Writing manifest", 
+                    "Storing signatures"
+                ]
+                cleaned_stderr = "\n".join([
+                    line for line in stderr.splitlines() 
+                    if not any(keyword in line for keyword in ignore_keywords)
+                ])
+
             result = stdout
+            # Only append stderr if it contains actual content (warnings, user errors)
+            if cleaned_stderr:
+                result += f"\n--- stderr ---\n{cleaned_stderr}"
+                
+            # Update clipboard silently and notify completion
             pyperclip.copy(f"Result ({lang}):\n---\n{result}")
             icon.notify(f"Success! Result copied to clipboard.", title="Ephemeral")
 
