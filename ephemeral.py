@@ -24,11 +24,17 @@ LANG_MAP = {
     # --- Science & Engineering ---
     'science': {'image': 'continuumio/anaconda3', 'cmd': ['python', '-']},
     'octave':  {'image': 'gnuoctave/octave:latest', 'cmd': ['octave', '--no-gui', '--quiet', '--eval', '-']},
+
+    # --- Windows-like Shells (via Linux) ---
+    # Official PowerShell Core on Linux
+    'pwsh':    {'image': 'mcr.microsoft.com/powershell', 'cmd': ['pwsh', '-Command', '-']},
     
     # Aliases
     'py': 'python', 'js': 'node', 'sh': 'bash',
     'numpy': 'science', 'pandas': 'science',
-    'matlab': 'octave'
+    'matlab': 'octave',
+    'powershell': 'pwsh', 'ps1': 'pwsh',
+    'cmd': 'pwsh', 'batch': 'pwsh' # Fallback to pwsh for basic Windows command compatibility
 }
 
 def create_icon_image():
@@ -77,16 +83,16 @@ def run_logic(icon):
 
     if not code: return
 
-    # Resolve alias (e.g., py -> python)
+    # Resolve configuration or alias
     config = None
     if lang in LANG_MAP:
-        config = LANG_MAP[lang]
-    elif lang in ['py', 'js', 'sh', 'numpy', 'pandas', 'matlab']: 
-        if lang == 'py': config = LANG_MAP['python']
-        elif lang == 'js': config = LANG_MAP['node']
-        elif lang == 'sh': config = LANG_MAP['bash']
-        elif lang in ['numpy', 'pandas']: config = LANG_MAP['science']
-        elif lang == 'matlab': config = LANG_MAP['octave']
+        val = LANG_MAP[lang]
+        # Recursively resolve string aliases (e.g. 'py' -> 'python' -> config dict)
+        if isinstance(val, str):
+            if val in LANG_MAP:
+                config = LANG_MAP[val]
+        else:
+            config = val
     
     if not config: return
 
