@@ -45,7 +45,7 @@ LANG_MAP = {
 
     # --- Functional & Scripting ---
     'haskell': {'image': 'haskell:slim', 'cmd': ['runghc']},
-    'lua':     {'image': 'lua:alpine',     'cmd': ['lua', '-']},
+    'lua':     {'image': 'nickblah/lua:5.4-alpine', 'cmd': ['lua', '-']},
     'perl':    {'image': 'perl:slim',      'cmd': ['perl', '-']},
     'php':     {'image': 'php:alpine',     'cmd': ['php']},
 
