@@ -39,17 +39,15 @@ LANG_MAP = {
     'go':      {'image': 'golang:alpine', 'cmd': ['sh', '-c', 'cat > /tmp/main.go && go run /tmp/main.go']},
 
     # --- Golfing & Modern Compiled ---
-    # Crystal: Ruby-like syntax but compiles to C-speed native code. Great for golf.
-    'crystal': {'image': 'crystallang/crystal:alpine', 'cmd': ['sh', '-c', 'cat > /tmp/run.cr && crystal run /tmp/run.cr']},
-    # Nim: Python-like syntax, C-like speed.
+    'crystal': {'image': 'crystallang/crystal:latest', 'cmd': ['sh', '-c', 'cat > /tmp/run.cr && crystal run /tmp/run.cr']},
     'nim':     {'image': 'nimlang/nim:alpine', 'cmd': ['sh', '-c', 'cat > /tmp/run.nim && nim c -r --verbosity:0 --hints:off /tmp/run.nim']},
 
     # --- Lisp Family ---
-    'lisp':    {'image': 'frolvlad/alpine-sbcl', 'cmd': ['sh', '-c', 'cat > /tmp/run.lisp && sbcl --script /tmp/run.lisp']},
+    'lisp':    {'image': 'clfoundation/sbcl:slim', 'cmd': ['sh', '-c', 'cat > /tmp/run.lisp && sbcl --script /tmp/run.lisp']},
     'clojure': {'image': 'clojure:temurin-17-alpine', 'cmd': ['sh', '-c', 'cat > /tmp/run.clj && clojure -M /tmp/run.clj']},
 
     # --- Stack & Concatenative ---
-    'forth':   {'image': 'bebound/gforth', 'cmd': ['sh', '-c', 'cat > /tmp/run.fs && gforth /tmp/run.fs -e bye']},
+    'forth':   {'image': 'rbylsma/gforth-alpine', 'cmd': ['sh', '-c', 'cat > /tmp/run.fs && gforth /tmp/run.fs -e bye']},
 
     # --- Hardware Description (HDL) ---
     'verilog': {'image': 'hdlc/iverilog', 'cmd': ['sh', '-c', 'cat > /tmp/run.v && iverilog /tmp/run.v -o /tmp/out && vvp /tmp/out']},
@@ -61,7 +59,8 @@ LANG_MAP = {
     'php':     {'image': 'php:alpine',     'cmd': ['php']},
 
     # --- Windows-like Shells ---
-    'pwsh':    {'image': 'mcr.microsoft.com/powershell', 'cmd': ['pwsh', '-Command', '-']},
+    # UPDATED: Added -NoProfile -NonInteractive to reduce startup noise
+    'pwsh':    {'image': 'mcr.microsoft.com/powershell', 'cmd': ['pwsh', '-NoProfile', '-NonInteractive', '-Command', '-']},
     
     # --- Aliases ---
     'py': 'python', 'js': 'node', 'sh': 'bash',
@@ -86,6 +85,14 @@ def create_icon_image():
 
 def get_clipboard():
     return pyperclip.paste()
+
+def strip_ansi_codes(text):
+    """
+    Removes ANSI escape sequences (colors, cursor movements) from text.
+    Essential for cleaning up PowerShell and colored output.
+    """
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    return ansi_escape.sub('', text)
 
 def parse_codeblock(content):
     """
@@ -292,8 +299,10 @@ def run_container_piped(icon, config, code, lang):
         )
         
         stdout_bytes, stderr_bytes = process.communicate(input=code_bytes)
-        stdout = stdout_bytes.decode('utf-8', errors='replace')
-        stderr = stderr_bytes.decode('utf-8', errors='replace')
+        
+        # Decode manually and STRIP ANSI
+        stdout = strip_ansi_codes(stdout_bytes.decode('utf-8', errors='replace'))
+        stderr = strip_ansi_codes(stderr_bytes.decode('utf-8', errors='replace'))
         
         if process.returncode == 0:
             result = stdout
