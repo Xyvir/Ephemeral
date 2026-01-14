@@ -48,6 +48,8 @@ Before running Ephemeral, you must ensure your Windows environment is ready to h
 
 *Note: Ephemeral supports Markdown blocks with language tags, Shebang lines (`#!/bin/python`), and prompts for user-input if no language specified.*
 
+A test suite file is provided in the repo to demonstration the usage of the various supported langauges.
+
 ## Features
 
 ### Manual Language Entry & History
@@ -144,7 +146,9 @@ Add support for serializing multiple varied language codeblocks in the clipboard
 
 Add support for 'seed files' (json, csv, yaml, md etc) ; plaintext files added to the container before running the codeblock with the format:
 
+````
 ```filename.txt
 foo
 bar
 ```
+````
