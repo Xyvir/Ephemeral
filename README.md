@@ -134,3 +134,17 @@ pyinstaller --noconsole --onefile --name "Ephemeral" --hidden-import=pystray eph
 ```
 
 > If you would like additional default languages included beside the above, please open a PR so I can get them added; prefferably recommended alongside specific lightweight container to run said language.
+
+
+# Todo:
+
+Currently text-only output is supported; though I can see a use case for adding a mechanism to retreive arbitrary file artifacts and that would be the next major addition.  
+  
+Add support for serializing multiple varied language codeblocks in the clipboard, running each in sequence and returning their ordered STOUD.  
+
+Add support for 'seed files' (json, csv, yaml, md etc) ; plaintext files added to the container before running the codeblock with the format:
+
+```filename.txt
+foo
+bar
+```
