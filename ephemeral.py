@@ -39,19 +39,12 @@ LANG_MAP = {
     'go':      {'image': 'golang:alpine', 'cmd': ['sh', '-c', 'cat > /tmp/main.go && go run /tmp/main.go']},
     
     # --- Expansion Pack (Systems) ---
-    # Zig: Uses 'master' tag because 'latest' does not exist in official repo.
-    'zig':     {'image': 'ziglang/zig:master', 'cmd': ['sh', '-c', 'cat > /tmp/main.zig && zig run /tmp/main.zig']},
-    # V (Vlang): Uses 'latest-alpine' because 'latest' is often missing/protected.
-    'v':       {'image': 'thevlang/v:latest-alpine', 'cmd': ['sh', '-c', 'cat > /tmp/main.v && v run /tmp/main.v']},
     # Java: 'latest' tag is deprecated/removed. Using JDK 21 Slim.
     'java':    {'image': 'openjdk:21-slim', 'cmd': ['sh', '-c', 'cat > /tmp/Main.java && java /tmp/Main.java']},
 
     # --- Golfing & Modern Compiled ---
     'crystal': {'image': 'crystallang/crystal:latest', 'cmd': ['sh', '-c', 'cat > /tmp/run.cr && crystal run /tmp/run.cr']},
     'nim':     {'image': 'nimlang/nim:alpine', 'cmd': ['sh', '-c', 'cat > /tmp/run.nim && nim c -r --verbosity:0 --hints:off /tmp/run.nim']},
-
-    # --- WebAssembly ---
-    'webasm':  {'image': 'wasmer/wasmer', 'entrypoint': '/bin/sh', 'cmd': ['-c', 'cat > /tmp/run.wat && wasmer run /tmp/run.wat']},
 
     # --- Lisp & Functional ---
     'lisp':    {'image': 'clfoundation/sbcl:slim', 'cmd': ['sh', '-c', 'cat > /tmp/run.lisp && sbcl --script /tmp/run.lisp']},
@@ -61,15 +54,6 @@ LANG_MAP = {
 
     # --- Logic ---
     'prolog':  {'image': 'swipl:latest', 'cmd': ['swipl', '-q', '-f', '/dev/stdin', '-t', 'halt']},
-
-    # --- Stack & Concatenative ---
-    'forth':   {'image': 'silkeh/gforth', 'entrypoint': '/bin/sh', 'cmd': ['-c', 'cat > /tmp/run.fs && gforth /tmp/run.fs -e bye']},
-    'brainfuck': {'image': 'esolang/brainfuck-esotope', 'cmd': ['brainfuck', '/dev/stdin']},
-
-    # --- Retro ---
-    'basic':   {'image': 'jamesbrink/bwbasic', 'entrypoint': '/bin/sh', 'cmd': ['-c', 'cat > /tmp/run.bas && echo "quit" >> /tmp/run.bas && bwbasic /tmp/run.bas']},
-    'cobol':   {'image': 'bmoorman/gnucobol', 'entrypoint': '/bin/sh', 'cmd': ['-c', 'cat > /tmp/main.cob && cobc -x -free -o /tmp/run /tmp/main.cob && /tmp/run']},
-    'pascal':  {'image': 'freepascal/fpc', 'cmd': ['sh', '-c', 'cat > /tmp/run.pas && fpc /tmp/run.pas > /dev/null && /tmp/run']},
 
     # --- Hardware Description (HDL) ---
     'verilog': {'image': 'hdlc/iverilog', 'cmd': ['sh', '-c', 'cat > /tmp/run.v && iverilog /tmp/run.v -o /tmp/out && vvp /tmp/out']},
@@ -95,13 +79,7 @@ LANG_MAP = {
     'clj': 'clojure', 'ex': 'elixir', 'exs': 'elixir',
     'ml': 'ocaml',
     'swipl': 'prolog', 'pl': 'prolog',
-    'gforth': 'forth', 'bf': 'brainfuck',
-    'qbasic': 'basic', 'gwbasic': 'basic',
-    'cob': 'cobol', 'gnucobol': 'cobol',
-    'pas': 'pascal', 'freepascal': 'pascal',
-    'cr': 'crystal', 'nimrod': 'nim',
-    'wasm': 'webasm', 'wat': 'webasm',
-    'vlang': 'v'
+    'cr': 'crystal', 'nimrod': 'nim'
 }
 
 def create_icon_image():
