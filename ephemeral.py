@@ -36,7 +36,9 @@ LANG_MAP = {
     'cpp':     {'image': 'gcc:latest', 'cmd': ['sh', '-c', 'g++ -x c++ - -o /tmp/run && /tmp/run']},
     'fortran': {'image': 'gcc:latest', 'cmd': ['sh', '-c', 'gfortran -x f95 - -o /tmp/run && /tmp/run']},
     'rust':    {'image': 'rust:alpine', 'cmd': ['sh', '-c', 'rustc - -o /tmp/run && /tmp/run']},
-    'go':      {'image': 'golang:alpine', 'cmd': ['go', 'run', '/dev/stdin']},
+    
+    # FIXED: Go requires a .go file extension to run properly. We pipe to a temp file first.
+    'go':      {'image': 'golang:alpine', 'cmd': ['sh', '-c', 'cat > /tmp/main.go && go run /tmp/main.go']},
 
     # --- Hardware Description (HDL) ---
     'verilog': {'image': 'hdlc/iverilog', 'cmd': ['sh', '-c', 'cat > /tmp/run.v && iverilog /tmp/run.v -o /tmp/out && vvp /tmp/out']},
@@ -280,7 +282,6 @@ def run_container_piped(icon, config, code, lang):
         
         if process.returncode == 0:
             result = stdout
-            # WRAP RESULT IN FENCED CODE BLOCK
             pyperclip.copy(f"Result ({lang}):\n---\n```text\n{result.strip()}\n```")
             icon.notify("Success! Results copied to clipboard.", title="Ephemeral")
         else:
