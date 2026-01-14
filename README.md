@@ -16,7 +16,7 @@ Ephemeral acts as a "Sidecar Notebook" for your entire operating system. It leve
 2.  **Clean System:** No more `npm_modules` or stray `.py` files cluttering your desktop. The container lives for milliseconds and vanishes.
 3.  **Security:** Snippets run in a sandbox (`--network none`). A malicious `rm -rf /` only deletes a temporary container, not your hard drive.
 4.  **Legacy Support:** Need to test a script in Python 2.7? Just type `python:2.7`. Ephemeral pulls the specific version for that run.
-5.  **Context Agnostic:** It works anywhere you can copy text.
+5.  **Context Agnostic:** It works anywhere you can copy text. 
 
 ## Prerequisites
 
@@ -67,7 +67,6 @@ If no version is specified, it defaults to the stable/slim versions defined in t
 * **Lua** (`lua`)
 * **Perl** (`perl`)
 * **PHP** (`php`)
-* **Haskell** (`haskell`)
 
 ### Systems & Compiled
 * **C** (`c`, `cc`) -> Compiled via GCC
@@ -75,6 +74,13 @@ If no version is specified, it defaults to the stable/slim versions defined in t
 * **Rust** (`rust`) -> Compiled via RustC
 * **Go** (`go`, `golang`)
 * **Fortran** (`fortran`, `f90`, `f95`) -> Compiled via GFortran
+* **Zig** (`zig`) -> Modern C successor
+* **V** (`v`, `vlang`) -> Simple, fast, safe compiled language
+* **Java** (`java`) -> Single-file source execution (Java 11+)
+
+### Modern & Golfing
+* **Crystal** (`cr`, `crystal`) -> Ruby-like syntax, C-like speed
+* **Nim** (`nim`, `nimrod`) -> Python-like syntax, compiled
 
 ### Science, Data & Engineering
 * **Science Python** (`science`, `numpy`, `pandas`) -> Uses Anaconda3 image
@@ -83,7 +89,23 @@ If no version is specified, it defaults to the stable/slim versions defined in t
 * **Octave** (`octave`, `matlab`) -> Open-source Matlab alternative
 * **Verilog** (`verilog`) -> Compiled via Icarus Verilog
 
-### Shells
+### Functional & Lisp
+* **Haskell** (`haskell`)
+* **Common Lisp** (`lisp`, `sbcl`, `cl`) -> SBCL (Steel Bank Common Lisp)
+* **Clojure** (`clojure`, `clj`)
+* **Elixir** (`elixir`, `ex`, `exs`)
+* **OCaml** (`ocaml`, `ml`)
+
+### Logic, Stack & Retro
+* **Prolog** (`prolog`, `swipl`, `pl`) -> SWI-Prolog
+* **Forth** (`forth`, `gforth`) -> Gforth
+* **Brainfuck** (`brainfuck`, `bf`)
+* **BASIC** (`basic`, `qbasic`, `gwbasic`) -> Bywater BASIC
+* **COBOL** (`cobol`, `cob`, `gnucobol`) -> GnuCOBOL (Free Format)
+* **Pascal** (`pascal`, `pas`, `freepascal`) -> Free Pascal Compiler
+
+### Web & Shells
+* **WebAssembly** (`webasm`, `wasm`, `wat`) -> Wasmer runtime
 * **PowerShell** (`pwsh`, `powershell`, `cmd`, `batch`) -> Official PowerShell Core on Linux
 
 ## Building from Source
