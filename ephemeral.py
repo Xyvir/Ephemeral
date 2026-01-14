@@ -11,17 +11,10 @@ import os
 import tempfile
 import time
 
-# --- Pygments Import (with fail-safe) ---
-try:
-    from pygments.lexers import guess_lexer
-    from pygments.util import ClassNotFound
-    HAS_PYGMENTS = True
-except ImportError:
-    HAS_PYGMENTS = False
-
 # --- Configuration ---
 HOTKEY = 'ctrl+alt+x'
 APP_NAME = "Ephemeral"
+LAST_DETECTED_LANG = "python" # Default starting language, updates dynamically
 
 # Map languages to the 'Clean Slate' Image on Docker Hub
 LANG_MAP = {
@@ -34,7 +27,7 @@ LANG_MAP = {
     # --- Science & Data ---
     'science': {'image': 'continuumio/anaconda3', 'cmd': ['python', '-']},
     'octave':  {'image': 'gnuoctave/octave:latest', 'cmd': ['octave', '--no-gui', '--quiet']},
-    'r':       {'image': 'r-base:latest',          'cmd': ['Rscript', '-']},
+    'r':       {'image': 'r-base:latest',          'cmd': ['R', '--slave', '-f', '/dev/stdin']},
     'julia':   {'image': 'julia:alpine',           'cmd': ['julia']},
 
     # --- Systems & Compiled (Compile-and-Run Chains) ---
@@ -77,39 +70,79 @@ def get_clipboard():
     return pyperclip.paste()
 
 def parse_codeblock(content):
+    """
+    Attempts to detect language via Markdown or Shebang.
+    Returns (lang, code).
+    If no detection, returns (None, None).
+    """
     if not content or not content.strip():
         return None, None
 
     # Strategy 1: Markdown
-    # RELAXED REGEX: Capture [^\s]+ instead of \w+ to allow 'python:2.7' or 'node-14'
+    # Capture [^\s]+ instead of \w+ to allow 'python:2.7' or 'node-14'
     pattern = r"```([^\s\n]+)?\s*\n(.*?)```"
     match = re.search(pattern, content, re.DOTALL)
     if match:
-        lang = match.group(1).lower() if match.group(1) else 'auto'
+        # If group(1) is None (just ```), we return None for lang so we can prompt user
+        lang = match.group(1).lower() if match.group(1) else None
         return lang, match.group(2)
 
     # Strategy 2: Shebang
     first_line = content.strip().splitlines()[0]
     if first_line.startswith("#!"):
         lower_line = first_line.lower()
-        # Simple containment check might miss versions, but works for general detection
-        # We can refine this if needed, but usually shebangs use system paths
         for key in LANG_MAP:
             if key in lower_line:
                 return key, content
     
-    # Strategy 3: Pygments
-    if HAS_PYGMENTS:
-        try:
-            lexer = guess_lexer(content)
-            if lexer.aliases:
-                pyg_lang = lexer.aliases[0].lower()
-                if pyg_lang != 'text':
-                    return pyg_lang, content
-        except ClassNotFound:
-            pass
-
     return None, None
+
+def prompt_user_for_language(default_lang):
+    """
+    Launches a visible CMD window asking the user to input a language.
+    Returns the entered string, or the default if empty.
+    """
+    fd_out, path_out = tempfile.mkstemp(suffix='.txt')
+    os.close(fd_out)
+    
+    fd_bat, path_bat = tempfile.mkstemp(suffix='.bat')
+    os.close(fd_bat)
+    
+    detected_lang = None
+    
+    try:
+        # Create a transient batch file for the input UI
+        with open(path_bat, 'w') as f:
+            f.write('@echo off\n')
+            # Using default system colors
+            f.write('title Ephemeral Input\n')
+            f.write('cls\n')
+            f.write('echo.\n')
+            f.write('echo  --------------------------------------------------\n')
+            f.write('echo   No language detected in clipboard.\n')
+            f.write('echo  --------------------------------------------------\n')
+            f.write('echo.\n')
+            f.write(f'set /p "lang= Enter Language [Default: {default_lang}]: "\n')
+            f.write(f'if "%lang%"=="" set lang={default_lang}\n')
+            f.write(f'echo %lang%> "{path_out}"\n')
+        
+        # Run it in a new visible console (blocking)
+        subprocess.run(path_bat, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        
+        # Read the result
+        if os.path.exists(path_out):
+            with open(path_out, 'r') as f:
+                val = f.read().strip()
+                if val: detected_lang = val
+            
+    except Exception as e:
+        print(f"Input error: {e}")
+        return None
+    finally:
+        if os.path.exists(path_out): os.remove(path_out)
+        if os.path.exists(path_bat): os.remove(path_bat)
+        
+    return detected_lang
 
 def resolve_runtime_config(lang):
     """
@@ -136,35 +169,22 @@ def resolve_runtime_config(lang):
             if base_lang in LANG_MAP and isinstance(LANG_MAP[base_lang], str):
                  base_lang = LANG_MAP[base_lang]
         elif isinstance(resolved, dict):
-            # It's a direct config, base_lang is correct
             pass
     
     # 3. Get Base Config
     config = None
     if base_lang in LANG_MAP and isinstance(LANG_MAP[base_lang], dict):
-        # Copy to avoid mutating global state
         config = LANG_MAP[base_lang].copy()
     
     # 4. Fallback or Apply Version
     if config:
         if version:
-            # We have a config (e.g. python) and a requested version (e.g. 2.7)
-            # The base image is likely 'python:3.10-slim'.
-            # We want to keep the repository 'python' but change the tag to '2.7'.
             original_image = config['image']
-            
-            # Simple heuristic: Take everything before the first colon (or whole string if no colon)
             repo = original_image.split(':')[0]
-            
-            # Reconstruct image string. 
-            # Note: User must know valid tags (e.g. '2.7' or '2.7-slim' if they typed python:2.7-slim)
-            # But here we only parsed the number. Let's try appending the version directly.
             config['image'] = f"{repo}:{version}"
             
     else:
         # Wildcard Fallback
-        # If user typed 'perl:5.34', base_lang is perl.
-        # If perl isn't in LANG_MAP, we construct generic.
         image_tag = f"{lang}" if ':' in lang else f"{lang}:latest"
         config = {
             'image': image_tag,
@@ -239,21 +259,36 @@ def show_post_mortem_error(error_text):
 # --- Execution Logic ---
 
 def run_logic(icon):
+    global LAST_DETECTED_LANG
     content = get_clipboard()
+    
+    # 1. Try explicit detection
     lang, code = parse_codeblock(content)
 
-    if not code:
-        icon.notify("No recognized code found (Markdown, Shebang, or Pygments).", title="Ephemeral Error")
-        return
+    # 2. If explicit detection failed (lang is None), but we have text...
+    if not lang:
+        if content and content.strip():
+            # Assume content is raw code
+            code = content
+            # Trigger Manual Prompt
+            user_input = prompt_user_for_language(LAST_DETECTED_LANG)
+            if user_input:
+                lang = user_input
+            else:
+                # User likely closed the window or hit cancel
+                icon.notify("Execution cancelled.", title="Ephemeral")
+                return
+        else:
+             icon.notify("Clipboard is empty.", title="Ephemeral Error")
+             return
 
-    # Use the new robust resolver
+    # 3. Update 'Memory' (Last Detected/Used)
+    # We update this regardless of whether it came from markdown or manual input
+    LAST_DETECTED_LANG = lang
+
+    # 4. Resolve Config
     config = resolve_runtime_config(lang)
     
-    # Flag to determine visibility: 
-    # If it's a fallback or non-standard version, we treat it as potentially "uncached" logic
-    # just to be safe, or stick to the check_image_exists logic.
-    # We'll rely on check_image_exists, as it covers version variations too.
-
     icon.notify(f"Launching {lang}...", title="Ephemeral Status")
 
     image_name = config['image']
@@ -272,6 +307,10 @@ def run_visible_console_logic(icon, config, code, lang):
     os.close(fd_out)
 
     try:
+        # SAFETY: Append newline if missing to prevent interpreter EOF errors
+        if not code.endswith('\n'):
+            code += '\n'
+
         with open(path_code, 'w', encoding='utf-8') as f:
             f.write(code)
 
@@ -314,6 +353,10 @@ def run_hidden_logic(icon, config, code, lang):
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         
+        # SAFETY: Append newline here as well
+        if not code.endswith('\n'):
+            code += '\n'
+
         podman_cmd = [
             'podman', 'run', '--rm', '-i', '--network', 'none', '--memory', '128m',
             config['image']
