@@ -1,84 +1,102 @@
 # Ephemeral Master Test Suite 
 
-## PART 1: MARKDOWN SYNTAX TESTS
-(Instructions: Copy the entire codeblock, including the top and bottom backticks.)
-
 ````
 
 --- Standard & Scripting ---
 
 ```python
 import sys
-print(f"Markdown: Python {sys.version.split()[0]} on {sys.platform} - OK")
+# Active check: Python version + Math (12 + 30)
+print(f"Markdown: Python {sys.version.split()[0]} | Math Check: {12 + 30} - OK")
 ```
 
 ```node
-console.log(`Markdown: Node ${process.version} on ${process.platform} - OK`);
+// Active check: Node version + Math (5 + 8)
+console.log(`Markdown: Node ${process.version} | Math Check: ${5 + 8} - OK`);
 ```
 
 ```ruby
-puts "Markdown: Ruby #{RUBY_VERSION} on #{RUBY_PLATFORM} - OK"
+# Active check: Ruby version + Math (6 + 7)
+puts "Markdown: Ruby #{RUBY_VERSION} | Math Check: #{6 + 7} - OK"
 ```
 
 ```bash
-echo "Markdown: Bash $BASH_VERSION running as $(whoami) - OK"
+# Active check: Bash version + Math (7 + 10)
+echo "Markdown: Bash $BASH_VERSION | Math Check: $((7 + 10)) - OK"
 ```
 
 ```lua
-print("Markdown: Lua " .. _VERSION .. " - OK")
+-- Active check: Lua version + Math (8 + 8)
+print("Markdown: Lua " .. _VERSION .. " | Math Check: " .. (8 + 8) .. " - OK")
 ```
 
 ```perl
-printf "Markdown: Perl v%vd - OK\n", $^V;
+# Active check: Perl version + Math (9 + 5)
+printf "Markdown: Perl v%vd | Math Check: %d - OK\n", $^V, 9 + 5;
 ```
 
 ```php
-<?php echo "Markdown: PHP " . phpversion() . " - OK"; ?>
+<?php
+// Active check: PHP version + Math (10 + 20)
+echo "Markdown: PHP " . phpversion() . " | Math Check: " . (10 + 20) . " - OK";
+?>
 ```
 
 --- Systems & Compiled ---
 
 ```c
 #include <stdio.h>
-int main() { printf("Markdown: C (GCC) - OK\n"); return 0; }
+// Active check: C + Math (11 + 9)
+int main() { printf("Markdown: C (GCC) | Math Check: %d - OK\n", 11 + 9); return 0; }
 ```
 
 ```cpp
 #include <iostream>
-int main() { std::cout << "Markdown: C++ (G++) - OK" << std::endl; return 0; }
+// Active check: C++ + Math (12 + 12)
+int main() { std::cout << "Markdown: C++ (G++) | Math Check: " << 12 + 12 << " - OK" << std::endl; return 0; }
 ```
 
 ```rust
-fn main() { println!("Markdown: Rust - OK"); }
+fn main() {
+    // Active check: Rust + Math (13 + 4)
+    println!("Markdown: Rust | Math Check: {} - OK", 13 + 4);
+}
 ```
 
 ```go
 package main
 import ("fmt"; "runtime")
-func main() { fmt.Printf("Markdown: Go %s - OK\n", runtime.Version()) }
+func main() {
+    // Active check: Go version + Math (14 + 6)
+    fmt.Printf("Markdown: Go %s | Math Check: %d - OK\n", runtime.Version(), 14 + 6)
+}
 ```
 
 ```fortran
 program test
-  print *, "Markdown: Fortran (GFortran) - OK"
+  ! Active check: Fortran + Math (15 + 15)
+  print *, "Markdown: Fortran (GFortran) | Math Check: ", 15 + 15, " - OK"
 end program test
 ```
 
 ```zig
 const std = @import("std");
 pub fn main() !void {
-    std.debug.print("Markdown: Zig - OK\n", .{});
+    // Active check: Zig + Math (16 + 2)
+    std.debug.print("Markdown: Zig | Math Check: {} - OK\n", .{16 + 2});
 }
 ```
 
 ```v
-fn main() { println('Markdown: Vlang - OK') }
+// Active check: Vlang + Math (17 + 3)
+fn main() { println('Markdown: Vlang | Math Check: ${17 + 3} - OK') }
 ```
 
 ```java
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Markdown: Java " + System.getProperty("java.version") + " - OK");
+        // Active check: Java + Math (18 + 18)
+        System.out.println("Markdown: Java " + System.getProperty("java.version") + " | Math Check: " + (18 + 18) + " - OK");
     }
 }
 ```
@@ -86,11 +104,13 @@ public class Main {
 --- Modern & Golfing ---
 
 ```crystal
-puts "Markdown: Crystal #{Crystal::VERSION} - OK"
+# Active check: Crystal version + Math (19 + 1)
+puts "Markdown: Crystal #{Crystal::VERSION} | Math Check: #{19 + 1} - OK"
 ```
 
 ```nim
-echo "Markdown: Nim ", NimVersion, " - OK"
+# Active check: Nim version + Math (20 + 5)
+echo "Markdown: Nim ", NimVersion, " | Math Check: ", 20 + 5, " - OK"
 ```
 
 --- Science, Data & Engineering ---
@@ -98,25 +118,30 @@ echo "Markdown: Nim ", NimVersion, " - OK"
 ```science
 import sys
 import numpy as np
-print(f"Markdown: Science (Anaconda) | Numpy: {np.__version__} - OK")
+# Active check: Anaconda Python + Math (21 + 9)
+print(f"Markdown: Science (Anaconda) | Math Check: {21 + 9} - OK")
 ```
 
 ```r
-cat(sprintf("Markdown: R %s - OK\n", R.version.string))
+# Active check: R version + Math (22 + 8)
+cat(sprintf("Markdown: R %s | Math Check: %d - OK\n", R.version.string, 22 + 8))
 ```
 
 ```julia
-println("Markdown: Julia $VERSION - OK")
+# Active check: Julia version + Math (23 + 7)
+println("Markdown: Julia $VERSION | Math Check: $(23 + 7) - OK")
 ```
 
 ```octave
-printf("Markdown: Octave %s - OK\n", version());
+# Active check: Octave version + Math (24 + 6)
+printf("Markdown: Octave %s | Math Check: %d - OK\n", version(), 24 + 6);
 ```
 
 ```verilog
 module test;
   initial begin
-    $display("Markdown: Verilog (Icarus) - OK");
+    // Active check: Verilog + Math (25 + 5)
+    $display("Markdown: Verilog (Icarus) | Math Check: %d - OK", 25 + 5);
     $finish;
   end
 endmodule
@@ -125,34 +150,41 @@ endmodule
 --- Functional & Lisp ---
 
 ```haskell
-main = putStrLn "Markdown: Haskell - OK"
+-- Active check: Haskell + Math (26 + 4)
+main = putStrLn $ "Markdown: Haskell | Math Check: " ++ show (26 + 4) ++ " - OK"
 ```
 
 ```lisp
-(format t "Markdown: Common Lisp (SBCL) - OK~%")
+;; Active check: Common Lisp + Math (27 + 3)
+(format t "Markdown: Common Lisp (SBCL) | Math Check: ~d - OK~%" (+ 27 3))
 ```
 
 ```clojure
-(println (str "Markdown: Clojure " (clojure-version) " - OK"))
+;; Active check: Clojure version + Math (28 + 2)
+(println (str "Markdown: Clojure " (clojure-version) " | Math Check: " (+ 28 2) " - OK"))
 ```
 
 ```elixir
-IO.puts "Markdown: Elixir #{System.version} - OK"
+# Active check: Elixir version + Math (29 + 11)
+IO.puts "Markdown: Elixir #{System.version} | Math Check: #{29 + 11} - OK"
 ```
 
 ```ocaml
-Printf.printf "Markdown: OCaml - OK\n";;
+(* Active check: OCaml + Math (30 + 10) *)
+Printf.printf "Markdown: OCaml | Math Check: %d - OK\n" (30 + 10);;
 ```
 
 --- Logic, Stack & Retro ---
 
 ```prolog
+% Active check: Prolog + Math (31 + 9)
 :- initialization(main).
-main :- write('Markdown: Prolog (SWI) - OK'), nl, halt.
+main :- Res is 31 + 9, write('Markdown: Prolog (SWI) | Math Check: '), write(Res), write(' - OK'), nl, halt.
 ```
 
 ```forth
-." Markdown: Forth (Gforth) - OK" CR bye
+\ Active check: Forth + Math (32 + 8)
+." Markdown: Forth (Gforth) | Math Check: " 32 8 + . ." - OK" CR bye
 ```
 
 ```brainfuck
@@ -160,39 +192,40 @@ main :- write('Markdown: Prolog (SWI) - OK'), nl, halt.
 ```
 
 ```basic
-PRINT "Markdown: BASIC (Bywater) - OK"
+REM Active check: BASIC + Math (33 + 7)
+PRINT "Markdown: BASIC (Bywater) | Math Check: "; 33 + 7; " - OK"
 ```
 
 ```cobol
        IDENTIFICATION DIVISION.
        PROGRAM-ID. TEST.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-SUM PIC 9(2).
        PROCEDURE DIVISION.
-           DISPLAY "Markdown: COBOL (GnuCOBOL) - OK".
+           COMPUTE WS-SUM = 34 + 6.
+           DISPLAY "Markdown: COBOL (GnuCOBOL) | Math Check: " WS-SUM " - OK".
            STOP RUN.
 ```
 
 ```pascal
 program Test;
 begin
-  WriteLn('Markdown: Pascal (FreePascal) - OK');
+  { Active check: Pascal + Math (35 + 5) }
+  WriteLn('Markdown: Pascal (FreePascal) | Math Check: ', 35 + 5, ' - OK');
 end.
 ```
 
 --- Web & Shells ---
 
 ```wat
-(module
-  (func $main (export "_start")
-    ;; Output logic depends heavily on WASI implementation
-    ;; This is a syntax check for the Wat parser
-  )
-)
+(module (func $main (export "_start")))
 ```
 
 ```pwsh
-Write-Output "Markdown: PowerShell $($PSVersionTable.PSVersion) - OK"
+# Active check: PowerShell + Math (36 + 4)
+Write-Output "Markdown: PowerShell | Math Check: $(36 + 4) - OK"
 ```
-
 ````
 
 ## PART 2: SHEBANG SYNTAX TESTS
@@ -203,37 +236,37 @@ Write-Output "Markdown: PowerShell $($PSVersionTable.PSVersion) - OK"
 ```text
 #!python
 import sys
-print(f"Shebang: Python {sys.version.split()[0]} - OK")
+print(f"Shebang: Python {sys.version.split()[0]} | Math: {12 + 30} - OK")
 ```
 
 ```text
 #!node
-console.log(`Shebang: Node ${process.version} - OK`);
+console.log(`Shebang: Node ${process.version} | Math: ${5 + 8} - OK`);
 ```
 
 ```text
 #!ruby
-puts "Shebang: Ruby #{RUBY_VERSION} - OK"
+puts "Shebang: Ruby #{RUBY_VERSION} | Math: #{6 + 7} - OK"
 ```
 
 ```text
 #!bash
-echo "Shebang: Bash $BASH_VERSION - OK"
+echo "Shebang: Bash $BASH_VERSION | Math: $((7 + 10)) - OK"
 ```
 
 ```text
 #!lua
-print("Shebang: Lua " .. _VERSION .. " - OK")
+print("Shebang: Lua " .. _VERSION .. " | Math: " .. (8 + 8) .. " - OK")
 ```
 
 ```text
 #!perl
-printf "Shebang: Perl v%vd - OK\n", $^V;
+printf "Shebang: Perl v%vd | Math: %d - OK\n", $^V, 9 + 5;
 ```
 
 ```text
 #!php
-<?php echo "Shebang: PHP " . phpversion() . " - OK"; ?>
+<?php echo "Shebang: PHP " . phpversion() . " | Math: " . (10 + 20) . " - OK"; ?>
 ```
 
 --- Systems & Compiled ---
@@ -241,31 +274,31 @@ printf "Shebang: Perl v%vd - OK\n", $^V;
 ```text
 #!c
 #include <stdio.h>
-int main() { printf("Shebang: C - OK\n"); return 0; }
+int main() { printf("Shebang: C | Math: %d - OK\n", 11 + 9); return 0; }
 ```
 
 ```text
 #!cpp
 #include <iostream>
-int main() { std::cout << "Shebang: C++ - OK" << std::endl; return 0; }
+int main() { std::cout << "Shebang: C++ | Math: " << 12 + 12 << " - OK" << std::endl; return 0; }
 ```
 
 ```text
 #!rust
-fn main() { println!("Shebang: Rust - OK"); }
+fn main() { println!("Shebang: Rust | Math: {} - OK", 13 + 4); }
 ```
 
 ```text
 #!go
 package main
 import ("fmt"; "runtime")
-func main() { fmt.Printf("Shebang: Go %s - OK\n", runtime.Version()) }
+func main() { fmt.Printf("Shebang: Go %s | Math: %d - OK\n", runtime.Version(), 14 + 6) }
 ```
 
 ```text
 #!fortran
 program test
-  print *, "Shebang: Fortran - OK"
+  print *, "Shebang: Fortran | Math: ", 15 + 15, " - OK"
 end program test
 ```
 
@@ -273,20 +306,20 @@ end program test
 #!zig
 const std = @import("std");
 pub fn main() !void {
-    std.debug.print("Shebang: Zig - OK\n", .{});
+    std.debug.print("Shebang: Zig | Math: {} - OK\n", .{16 + 2});
 }
 ```
 
 ```text
 #!v
-fn main() { println('Shebang: Vlang - OK') }
+fn main() { println('Shebang: Vlang | Math: ${17 + 3} - OK') }
 ```
 
 ```text
 #!java
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Shebang: Java " + System.getProperty("java.version") + " - OK");
+        System.out.println("Shebang: Java | Math: " + (18 + 18) + " - OK");
     }
 }
 ```
@@ -295,12 +328,12 @@ public class Main {
 
 ```text
 #!crystal
-puts "Shebang: Crystal #{Crystal::VERSION} - OK"
+puts "Shebang: Crystal #{Crystal::VERSION} | Math: #{19 + 1} - OK"
 ```
 
 ```text
 #!nim
-echo "Shebang: Nim ", NimVersion, " - OK"
+echo "Shebang: Nim ", NimVersion, " | Math: ", 20 + 5, " - OK"
 ```
 
 --- Science, Data & Engineering ---
@@ -308,29 +341,29 @@ echo "Shebang: Nim ", NimVersion, " - OK"
 ```text
 #!science
 import sys
-print(f"Shebang: Science (Anaconda) {sys.version.split()[0]} - OK")
+print(f"Shebang: Science (Anaconda) | Math: {21 + 9} - OK")
 ```
 
 ```text
 #!r
-cat(sprintf("Shebang: R %s - OK\n", R.version.string))
+cat(sprintf("Shebang: R %s | Math: %d - OK\n", R.version.string, 22 + 8))
 ```
 
 ```text
 #!julia
-println("Shebang: Julia $VERSION - OK")
+println("Shebang: Julia $VERSION | Math: $(23 + 7) - OK")
 ```
 
 ```text
 #!octave
-printf("Shebang: Octave %s - OK\n", version());
+printf("Shebang: Octave %s | Math: %d - OK\n", version(), 24 + 6);
 ```
 
 ```text
 #!verilog
 module test;
   initial begin
-    $display("Shebang: Verilog - OK");
+    $display("Shebang: Verilog | Math: %d - OK", 25 + 5);
     $finish;
   end
 endmodule
@@ -340,24 +373,81 @@ endmodule
 
 ```text
 #!haskell
-main = putStrLn "Shebang: Haskell - OK"
+main = putStrLn $ "Shebang: Haskell | Math: " ++ show (26 + 4) ++ " - OK"
 ```
 
 ```text
 #!lisp
-(format t "Shebang: Common Lisp - OK~%")
+(format t "Shebang: Common Lisp | Math: ~d - OK~%" (+ 27 3))
 ```
 
 ```text
 #!clojure
-(println (str "Shebang: Clojure " (clojure-version) " - OK"))
+(println (str "Shebang: Clojure " (clojure-version) " | Math: " (+ 28 2) " - OK"))
 ```
 
 ```text
 #!elixir
-IO.puts "Shebang: Elixir #{System.version} - OK"
+IO.puts "Shebang: Elixir #{System.version} | Math: #{29 + 11} - OK"
 ```
 
 ```text
 #!ocaml
-Printf.printf "Shebang: OCam
+Printf.printf "Shebang: OCaml | Math: %d - OK\n" (30 + 10);;
+```
+
+--- Logic, Stack & Retro ---
+
+```text
+#!prolog
+:- initialization(main).
+main :- Res is 31 + 9, write('Shebang: Prolog | Math: '), write(Res), write(' - OK'), nl, halt.
+```
+
+```text
+#!forth
+." Shebang: Forth | Math: " 32 8 + . ." - OK" CR bye
+```
+
+```text
+#!brainfuck
+++++++++++[>+>+++>+++++++>++++++++++<<<<-]>>>++.>+.+++++++..+++.<<++.>+++++++++++++.>
+```
+
+```text
+#!basic
+PRINT "Shebang: BASIC | Math: "; 33 + 7; " - OK"
+```
+
+```text
+#!cobol
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. TEST.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-SUM PIC 9(2).
+       PROCEDURE DIVISION.
+           COMPUTE WS-SUM = 34 + 6.
+           DISPLAY "Shebang: COBOL | Math: " WS-SUM " - OK".
+           STOP RUN.
+```
+
+```text
+#!pascal
+program Test;
+begin
+  WriteLn('Shebang: Pascal | Math: ', 35 + 5, ' - OK');
+end.
+```
+
+--- Web & Shells ---
+
+```text
+#!wat
+(module (func $main (export "_start")))
+```
+
+```text
+#!pwsh
+Write-Output "Shebang: PowerShell | Math: $(36 + 4) - OK"
+```
