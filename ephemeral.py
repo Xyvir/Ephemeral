@@ -47,7 +47,8 @@ LANG_MAP = {
     'clojure': {'image': 'clojure:temurin-17-alpine', 'cmd': ['sh', '-c', 'cat > /tmp/run.clj && clojure -M /tmp/run.clj']},
 
     # --- Stack & Concatenative ---
-    'forth':   {'image': 'rbylsma/gforth-alpine', 'cmd': ['sh', '-c', 'cat > /tmp/run.fs && gforth /tmp/run.fs -e bye']},
+    # UPDATED: Switched to silkeh/gforth and explicitly override entrypoint to use shell
+    'forth':   {'image': 'silkeh/gforth', 'entrypoint': '/bin/sh', 'cmd': ['-c', 'cat > /tmp/run.fs && gforth /tmp/run.fs -e bye']},
 
     # --- Hardware Description (HDL) ---
     'verilog': {'image': 'hdlc/iverilog', 'cmd': ['sh', '-c', 'cat > /tmp/run.v && iverilog /tmp/run.v -o /tmp/out && vvp /tmp/out']},
@@ -59,7 +60,6 @@ LANG_MAP = {
     'php':     {'image': 'php:alpine',     'cmd': ['php']},
 
     # --- Windows-like Shells ---
-    # UPDATED: Added -NoProfile -NonInteractive to reduce startup noise
     'pwsh':    {'image': 'mcr.microsoft.com/powershell', 'cmd': ['pwsh', '-NoProfile', '-NonInteractive', '-Command', '-']},
     
     # --- Aliases ---
@@ -288,10 +288,17 @@ def run_container_piped(icon, config, code, lang):
             code += '\n'
         code_bytes = code.replace('\r\n', '\n').encode('utf-8')
 
+        # UPDATED: Memory limit bumped to 512m to prevent compiler OOM (Exit 137)
         podman_cmd = [
-            'podman', 'run', '--rm', '-i', '--network', 'none', '--memory', '128m',
-            config['image']
-        ] + config['cmd']
+            'podman', 'run', '--rm', '-i', '--network', 'none', '--memory', '512m'
+        ]
+        
+        # Add entrypoint override if specified (Needed for images like silkeh/gforth)
+        if 'entrypoint' in config:
+            podman_cmd.extend(['--entrypoint', config['entrypoint']])
+            
+        podman_cmd.append(config['image'])
+        podman_cmd.extend(config['cmd'])
 
         process = subprocess.Popen(
             podman_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -299,7 +306,6 @@ def run_container_piped(icon, config, code, lang):
         )
         
         stdout_bytes, stderr_bytes = process.communicate(input=code_bytes)
-        
         # Decode manually and STRIP ANSI
         stdout = strip_ansi_codes(stdout_bytes.decode('utf-8', errors='replace'))
         stderr = strip_ansi_codes(stderr_bytes.decode('utf-8', errors='replace'))
