@@ -341,7 +341,7 @@ def run_container_piped(icon, config, code, lang):
         if process.returncode == 0:
             result = stdout
             pyperclip.copy(f"Result ({lang}):\n---\n```text\n{result.strip()}\n```")
-            icon.notify("Success! Results copied to clipboard.", title="Ephemeral")
+            icon.notify(f"{lang.capitalize()} execution results copied to clipboard.", title="Ephemeral")
         else:
             full_error = f"Exit Code: {process.returncode}\n\nSTDERR:\n{stderr}\n\nSTDOUT:\n{stdout}"
             show_post_mortem_error(full_error)
@@ -411,4 +411,5 @@ if __name__ == '__main__':
         item('Clear Image Cache', purge_cache),
         item('Quit', quit_app)
     )
-    icon = pystray.Icon("Ephemeral", image
+    icon = pystray.Icon("Ephemeral", image, "Ephemeral", menu)
+    icon.run(setup)
