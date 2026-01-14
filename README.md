@@ -48,7 +48,14 @@ Before running Ephemeral, you must ensure your Windows environment is ready to h
 
 *Note: Ephemeral supports Markdown blocks with language tags, Shebang lines (`#!/bin/python`), and prompts for user-input if no language specified.*
 
-## Legacy Versioning
+## Features
+
+### Manual Language Entry & History
+If you copy raw text without a language tag (e.g., no ` ```python `), Ephemeral will pop up a terminal window asking you to specify the language. 
+* It remembers your last used language for rapid iteration.
+* Simply press **Enter** to use the default/last-used language.
+
+### Legacy Versioning
 You can override the default "Latest" version by appending a tag to the language name in your markdown block or shebang:
 
 * `python:2.7` -> Runs in `python:2.7` container.
@@ -56,6 +63,11 @@ You can override the default "Latest" version by appending a tag to the language
 * `ruby-2.6` -> Runs in `ruby:2.6`.
 
 If no version is specified, it defaults to the stable/slim versions defined in the tool.
+
+### Cache Management
+Ephemeral downloads container images as needed. Over time, these can take up disk space.
+* **Right-click** the tray icon and select **"Clear Image Cache"**.
+* This runs a safe prune command (`podman image prune -a`) to delete all images not currently in use, freeing up space on your drive.
 
 ## Supported Languages
 
@@ -74,8 +86,6 @@ If no version is specified, it defaults to the stable/slim versions defined in t
 * **Rust** (`rust`) -> Compiled via RustC
 * **Go** (`go`, `golang`)
 * **Fortran** (`fortran`, `f90`, `f95`) -> Compiled via GFortran
-* **Zig** (`zig`) -> Modern C successor
-* **V** (`v`, `vlang`) -> Simple, fast, safe compiled language
 * **Java** (`java`) -> Single-file source execution (Java 11+)
 
 ### Modern & Golfing
@@ -96,16 +106,10 @@ If no version is specified, it defaults to the stable/slim versions defined in t
 * **Elixir** (`elixir`, `ex`, `exs`)
 * **OCaml** (`ocaml`, `ml`)
 
-### Logic, Stack & Retro
+### Logic
 * **Prolog** (`prolog`, `swipl`, `pl`) -> SWI-Prolog
-* **Forth** (`forth`, `gforth`) -> Gforth
-* **Brainfuck** (`brainfuck`, `bf`)
-* **BASIC** (`basic`, `qbasic`, `gwbasic`) -> Bywater BASIC
-* **COBOL** (`cobol`, `cob`, `gnucobol`) -> GnuCOBOL (Free Format)
-* **Pascal** (`pascal`, `pas`, `freepascal`) -> Free Pascal Compiler
 
-### Web & Shells
-* **WebAssembly** (`webasm`, `wasm`, `wat`) -> Wasmer runtime
+### Shells
 * **PowerShell** (`pwsh`, `powershell`, `cmd`, `batch`) -> Official PowerShell Core on Linux
 
 ## Building from Source
@@ -129,11 +133,4 @@ pip install pyinstaller
 pyinstaller --noconsole --onefile --name "Ephemeral" --hidden-import=pystray ephemeral.py
 ```
 
-> If you would like additional default languages included beside the above, please open a PR so I can get them added.>
-
-# Todo:
-
-Currently text-only output is supported; though I can see a use case for adding a mechanism to retreive arbitrary file artifacts and that would be the next major addition.  
-  
-Add support for serializing multiple varied language codeblocks in the clipboard, running each in sequence and returning their ordered STOUD.  
-
+> If you would like additional default languages included beside the above, please open a PR so I can get them added; prefferably recommended alongside specific lightweight container to run said language.
