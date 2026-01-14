@@ -46,7 +46,7 @@ Before running Ephemeral, you must ensure your Windows environment is ready to h
 3.  **Wait** for the notification (or the status window if a download is required).
 4.  **Paste** the result wherever you need it.
 
-*Note: Ephemeral supports Markdown blocks (with or without language tags), Shebang lines (`#!/bin/python`), and uses intelligent syntax detection as a fallback.*
+*Note: Ephemeral supports Markdown blocks with language tags, Shebang lines (`#!/bin/python`), and prompts for user-input if no language specified.*
 
 ## Legacy Versioning
 You can override the default "Latest" version by appending a tag to the language name in your markdown block or shebang:
