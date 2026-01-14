@@ -71,6 +71,11 @@ def get_clipboard():
     return pyperclip.paste()
 
 def parse_codeblock(content):
+    """
+    Attempts to detect language via Markdown or Shebang.
+    Returns (lang, code).
+    If no detection, returns (None, None).
+    """
     if not content or not content.strip():
         return None, None
 
@@ -101,7 +106,7 @@ def prompt_user_for_language(default_lang):
     try:
         with open(path_bat, 'w') as f:
             f.write('@echo off\n')
-            f.write('title Ephemeral Input\n')
+            f.write('title Ephemeral: No language specified\n')
             f.write('cls\n')
             f.write('echo.\n')
             f.write('echo  --------------------------------------------------\n')
@@ -129,7 +134,7 @@ def prompt_user_for_language(default_lang):
 def resolve_runtime_config(lang):
     base_lang = lang
     version = None
-    match = re.match(r"^([a-z]+)(?:[:\-](\d+(?:\.\d+)*))?$", lang)
+    match = re.match(r"^([a-z0-9\+\#]+)(?:[:\-](\d+(?:\.\d+)*))?$", lang)
     if match:
         base_lang = match.group(1)
         version = match.group(2) 
@@ -223,35 +228,19 @@ def show_post_mortem_error(error_text):
 # --- Cleanup ---
 
 def purge_cache(icon, item):
-    """
-    Clears all unused podman images (dangling and unreferenced) to free space.
-    Requires user confirmation via native Message Box.
-    """
-    # 1. Native Windows Confirmation Dialog
-    # MessageBoxW(hwnd, text, caption, type) -> 4 is MB_YESNO. Return 6 is IDYES.
     result = ctypes.windll.user32.MessageBoxW(0, 
         "This will remove ALL unused Podman images to free up disk space.\n\nAre you sure you want to proceed?", 
         "Clear Image Cache", 
-        4 | 0x30) # 4=Yes/No, 0x30=Warning Icon
+        4 | 0x30) 
 
-    if result != 6: # User clicked No
-        return
+    if result != 6: return
 
     icon.notify("Pruning unused images... this may take a moment.", title="Ephemeral Maintenance")
-    
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     
     try:
-        # podman image prune -a -f 
-        # -a: Remove all unused images, not just dangling ones
-        # -f: Force (no confirmation prompt from CLI)
-        subprocess.run(
-            ['podman', 'image', 'prune', '--all', '--force'], 
-            startupinfo=startupinfo,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
+        subprocess.run(['podman', 'image', 'prune', '--all', '--force'], startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         icon.notify("Image cache cleared successfully.", title="Ephemeral")
     except Exception as e:
         icon.notify(f"Error clearing cache: {e}", title="Ephemeral Error")
@@ -291,8 +280,9 @@ def run_container_piped(icon, config, code, lang):
         
         if process.returncode == 0:
             result = stdout
-            pyperclip.copy(f"Result ({lang}):\n---\n{result}")
-            icon.notify("Success", title="Ephemeral")
+            # WRAP RESULT IN FENCED CODE BLOCK
+            pyperclip.copy(f"Result ({lang}):\n---\n```text\n{result.strip()}\n```")
+            icon.notify("Success! Results copied to clipboard.", title="Ephemeral")
         else:
             full_error = f"Exit Code: {process.returncode}\n\nSTDERR:\n{stderr}\n\nSTDOUT:\n{stdout}"
             show_post_mortem_error(full_error)
@@ -305,6 +295,11 @@ def run_logic(icon):
     global LAST_DETECTED_LANG
     content = get_clipboard()
     
+    # --- SAFETY CHECK: Prevent Recursion ---
+    if re.search(r"^Result \(.*\):[\r\n]+---[\r\n]+", content.strip(), re.MULTILINE):
+        icon.notify("Clipboard contains previous results. Execution halted.", title="Ephemeral Safety")
+        return
+
     lang, code = parse_codeblock(content)
 
     if not lang:
@@ -312,7 +307,7 @@ def run_logic(icon):
             code = content
             user_input = prompt_user_for_language(LAST_DETECTED_LANG)
             if user_input:
-                lang = user_input
+                lang = user_input.strip().lower()
             else:
                 icon.notify("Execution cancelled.", title="Ephemeral")
                 return
