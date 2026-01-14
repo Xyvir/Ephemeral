@@ -106,3 +106,5 @@ To create a standalone executable that doesn't require Python installed:
 pip install pyinstaller
 pyinstaller --noconsole --onefile --name "Ephemeral" --hidden-import=pystray ephemeral.py
 ```
+
+> If you would like additional default languages included beside the above, please open a PR so I can get them added.
