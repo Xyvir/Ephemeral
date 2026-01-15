@@ -359,18 +359,18 @@ endmodule
 ```
 ````
 
-
-```whitespace
-(Visual representation of S/T/L below, real whitespace is invisible)
-SS STSSTSSSL
-TLSSSS
-```
-
 ````
 ```whitespace
-
-
-    
+SS STSSTSSSL TLSSSS SS STSTSSTTL TLSSSS SS STSTSTSHL TLSSSS SS STSSLLL TLSSSS
+SS STSSSLSL TLSSSS SS STSTSTSHL TLSSSS SS STSSLLL TLSSSS SS STSSTTSSL TLSSSS
+SS STSSTTL TLSSSS SS STSLSLL TLSSSS SS STSTSSTTL TLSSSS SS STSTSTSSL TLSSSS
+SS STSTCCSL TLSSSS SS STSTCCSL TLSSSS SS STSTCCSL TLSSSS SS STSTSTSSL TLSSSS
+SS STSLSLL TLSSSS SS STSSTSSSL TLSSSS SS STSTSSTTL TLSSSS SS STSTSTSHL TLSSSS
+SS STSSLLL TLSSSS SS STSSLLLL TLSSSS SS STSTSTSSL TLSSSS SS STSTSSLSL TLSSSS
+SS STSTSTSSL TLSSSS SS STSTSLSSL TLSSSS SS STSSLLL TLSSSS SS STSTSSLSL TLSSSS
+SS STSTSTSSL TLSSSS SS STSSSLTL TLSSSS SS STSSLLL TLSSSS SS STSL TLST
+SS STSSLLL TLSSSS SS STSSLTTL TLSSSS SS STSSLLL TLSSSS SS STSTTTTL TLSSSS
+SS STSTSSTTL TLSSSS LLL
 ```
 ````
 
@@ -487,10 +487,7 @@ y | M a t
   @ . .
 ```
 
-```text
-#!intercal
-(Intercal is polite and verbose; skipping Shebang short-form test)
-```
+
 
 ```text
 #!java
@@ -606,10 +603,6 @@ import sys
 print(f"Shebang: Science (Anaconda) | Math: {21 + 9} - OK")
 ```
 
-```text
-#!shakespeare
-(Shakespeare SPL check skipped for brevity)
-```
 
 ```text
 #!unlambda
@@ -626,7 +619,4 @@ module test;
 endmodule
 ```
 
-```text
-#!whitespace
-(Whitespace check requires invisible chars)
 ```
