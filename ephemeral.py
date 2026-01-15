@@ -397,7 +397,7 @@ def run_container_piped(icon, config, code, lang):
         if process.returncode == 0:
             result = stdout
             title_lang = lang.split()[0].capitalize() if lang else "Custom"
-            pyperclip.copy(f"Result ({title_lang}):\n---\n```text\n{result.strip()}\n```")
+            pyperclip.copy(f"---\nResult ({title_lang}):\n```text\n{result.strip()}\n```")
             icon.notify(f"{title_lang} execution results copied to clipboard.", title="Ephemeral")
         else:
             full_error = f"Exit Code: {process.returncode}\n\nSTDERR:\n{stderr}\n\nSTDOUT:\n{stdout}"
