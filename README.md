@@ -115,7 +115,7 @@ Any file your script saves to the **`/output`** directory inside the container i
 
 **Example (Python Plotting):**
 ````
-```python
+```science
 import matplotlib.pyplot as plt
 import numpy as np
 
