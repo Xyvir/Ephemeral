@@ -12,8 +12,7 @@ import tempfile
 import time
 import shlex
 import ctypes
-import glob
-from io import BytesIO
+import shutil # For moving files and zipping
 
 # --- Configuration ---
 HOTKEY = 'ctrl+alt+x'
@@ -85,12 +84,14 @@ LANG_MAP = {
     'ml': 'ocaml',
     'swipl': 'prolog', 'pl': 'prolog',
     'cr': 'crystal', 'nimrod': 'nim',
-    'bf': 'brainfuck'
+    'bf': 'brainfuck', 'spl': 'shakespeare', '><>': 'fish'
 }
 
 # Add esolangs dynamically
 ESOLANGS = [
-'05ab1e',  'golfscript',  'lolcode',  'piet',   'cjam', 'intercal'
+    '05ab1e', 'jelly', 'golfscript', 'befunge', 'whitespace', 'lolcode', 
+    'shakespeare', 'malbolge', 'piet', 'matl', 'fish', 'hexagony', 'cjam', 
+    'intercal', 'unlambda', 'arnoldc', 'emojicode'
 ]
 for lang in ESOLANGS:
     if lang not in LANG_MAP:
@@ -226,42 +227,30 @@ def resolve_runtime_config(header_line):
 
 # --- Clipboard Images (Windows) ---
 def copy_image_to_clipboard(image_path):
-    """
-    Copies a PNG/JPG file to the Windows Clipboard as a Bitmap (DIB).
-    Requires no extra dependencies beyond Pillow + ctypes.
-    """
     try:
-        # Open image and convert to RGB
+        from io import BytesIO
         img = Image.open(image_path)
         output = BytesIO()
         img.convert("RGB").save(output, "BMP")
-        data = output.getvalue()[14:] # Strip 14-byte BMP header to get DIB
+        data = output.getvalue()[14:] 
         output.close()
-
-        # Windows API
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
-        
         OpenClipboard = user32.OpenClipboard
         EmptyClipboard = user32.EmptyClipboard
         SetClipboardData = user32.SetClipboardData
         CloseClipboard = user32.CloseClipboard
-        
         GlobalAlloc = kernel32.GlobalAlloc
         GlobalLock = kernel32.GlobalLock
         GlobalUnlock = kernel32.GlobalUnlock
-        
         GMEM_MOVEABLE = 0x0002
         CF_DIB = 8
-
         OpenClipboard(0)
         EmptyClipboard()
-        
         hCd = GlobalAlloc(GMEM_MOVEABLE, len(data))
         pchData = GlobalLock(hCd)
         ctypes.memmove(pchData, data, len(data))
         GlobalUnlock(hCd)
-        
         SetClipboardData(CF_DIB, hCd)
         CloseClipboard()
         return True
@@ -345,7 +334,6 @@ def run_container_piped(icon, config, code, lang):
         code_bytes = code.replace('\r\n', '\n').encode('utf-8')
 
         podman_cmd = ['podman', 'run', '--rm', '-i', '--network', 'none', '--memory', '512m']
-        # MOUNT: Map host temp dir to /output in container
         podman_cmd.extend(['-v', f'{output_dir}:/output'])
         
         if 'entrypoint' in config: podman_cmd.extend(['--entrypoint', config['entrypoint']])
@@ -362,21 +350,48 @@ def run_container_piped(icon, config, code, lang):
         stderr = strip_ansi_codes(stderr_bytes.decode('utf-8', errors='replace'))
         
         if process.returncode == 0:
-            # CHECK FOR IMAGES
-            images = glob.glob(os.path.join(output_dir, '*'))
-            image_found = False
-            for img_path in images:
-                if img_path.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
-                    if copy_image_to_clipboard(img_path):
-                        icon.notify("Image generated and copied to clipboard!", title="Ephemeral")
-                        image_found = True
-                        break
-            
-            if not image_found:
+            # CHECK FOR ARTIFACTS
+            files = [f for f in os.listdir(output_dir) if os.path.isfile(os.path.join(output_dir, f))]
+            downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+            safe_lang = re.sub(r'[^a-zA-Z0-9]', '_', lang) if lang else "custom"
+
+            if len(files) == 0:
                 result = stdout
                 title_lang = lang.split()[0].capitalize() if lang else "Custom"
                 pyperclip.copy(f"Result ({title_lang}):\n---\n```text\n{result.strip()}\n```")
                 icon.notify(f"{title_lang} execution results copied to clipboard.", title="Ephemeral")
+            
+            elif len(files) == 1:
+                filename = files[0]
+                filepath = os.path.join(output_dir, filename)
+                
+                if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+                    if copy_image_to_clipboard(filepath):
+                        icon.notify("Image generated and copied to clipboard!", title="Ephemeral")
+                    else:
+                        icon.notify("Failed to copy image. Check debug.", title="Ephemeral Error")
+                else:
+                    # Single non-image -> Move to Downloads
+                    target_name = f"Ephemeral_{safe_lang}_{filename}"
+                    target_path = os.path.join(downloads_dir, target_name)
+                    
+                    base, ext = os.path.splitext(target_path)
+                    counter = 1
+                    while os.path.exists(target_path):
+                        target_path = f"{base}_{counter}{ext}"
+                        counter += 1
+                    
+                    shutil.move(filepath, target_path)
+                    icon.notify(f"File saved to Downloads:\n{os.path.basename(target_path)}", title="Ephemeral")
+
+            else:
+                # Multiple files -> Zip to Downloads
+                timestamp = int(time.time())
+                zip_base_name = f"Ephemeral_{safe_lang}_Artifacts_{timestamp}"
+                zip_base_path = os.path.join(downloads_dir, zip_base_name)
+                
+                final_zip = shutil.make_archive(zip_base_path, 'zip', output_dir)
+                icon.notify(f"Artifacts zipped to Downloads:\n{os.path.basename(final_zip)}", title="Ephemeral")
         else:
             full_error = f"Exit Code: {process.returncode}\n\nSTDERR:\n{stderr}\n\nSTDOUT:\n{stdout}"
             show_post_mortem_error(full_error)
@@ -385,7 +400,6 @@ def run_container_piped(icon, config, code, lang):
         show_post_mortem_error(f"System Exception:\n{str(e)}")
         icon.notify("Critical System Error", title="Ephemeral Failed")
     finally:
-        # Cleanup output dir files
         try:
             for f in os.listdir(output_dir):
                 os.remove(os.path.join(output_dir, f))
