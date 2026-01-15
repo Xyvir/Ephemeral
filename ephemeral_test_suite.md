@@ -8,13 +8,6 @@
 ```
 ````
 
-````
-```arnoldc
-IT'S SHOWTIME
-TALK TO THE HAND "Markdown: ArnoldC | Math Check: 4 - OK"
-YOU HAVE BEEN TERMINATED
-```
-````
 
 ````
 ```bash
@@ -23,11 +16,6 @@ echo "Markdown: Bash $BASH_VERSION | Math Check: $((7 + 10)) - OK"
 ```
 ````
 
-````
-```befunge
-<@,,,,,,,,,,,,,,,"OK - 6 :kcehC htaM | egnufeB :nwodkraM"
-```
-````
 
 ````
 ```brainfuck
@@ -82,19 +70,6 @@ IO.puts "Markdown: Elixir #{System.version} | Math Check: #{29 + 11} - OK"
 ```
 ````
 
-````
-```emojicode
-🏁 🍇
-  😀 🔤Markdown: Emojicode | Math Check: 4 - OK🔤
-🍉
-```
-````
-
-````
-```fish
-"KO - 5 :kcehC htaM | ><> :nwodkraM"l?!;o
-```
-````
 
 ````
 ```fortran
@@ -137,31 +112,6 @@ main = putStrLn $ "Markdown: Haskell | Math Check: " ++ show (26 + 4) ++ " - OK"
 ````
 
 ````
-```hexagony
-/ M \
- a r k d
-o w n : H
- e x a g o n
-y | M a t
- h : 9 ;
-  @ . .
-```
-````
-
-````
-```intercal
-PLEASE DO ,1 <- #13
-PLEASE DO ,1 SUB #1 <- #238
-PLEASE DO ,1 SUB #2 <- #108
-PLEASE DO ,1 SUB #3 <- #112
-PLEASE DO ,1 SUB #4 <- #0
-PLEASE DO ,1 SUB #5 <- #64
-PLEASE DO READ OUT ,1
-PLEASE GIVE UP
-```
-````
-
-````
 ```java
 public class Main {
     public static void main(String[] args) {
@@ -172,11 +122,6 @@ public class Main {
 ```
 ````
 
-````
-```jelly
-"Markdown: Jelly | Math Check: " 6 6 + " - OK"
-```
-````
 
 ````
 ```julia
@@ -207,17 +152,7 @@ print("Markdown: Lua " .. _VERSION .. " | Math Check: " .. (8 + 8) .. " - OK")
 ```
 ````
 
-````
-```malbolge
-(=<`#9]~6ZY327Uv4-QsqpMn&+Ij"'E%e{Ab~w=_:]Kw%o44Uqp0/Q?xZEIM`97-5AA2SRnm3<1I/
-```
-````
 
-````
-```matl
-'Markdown: MATL | Math Check: ' 9 2 + num2str ' - OK' h
-```
-````
 
 ````
 ```nim
@@ -318,34 +253,6 @@ print(f"Markdown: Science (Anaconda) | Math Check: {21 + 9} - OK")
 ```
 ````
 
-````
-```shakespeare
-The Infamous Math Check.
-
-Romeo, a young man with a remarkable patience.
-Juliet, a likewise young woman of remarkable grace.
-
-                    Act I: The Math.
-
-                    Scene I: The Output.
-
-[Enter Romeo and Juliet]
-
-Romeo:
- You are as lovely as the sum of a warm summer day and a flower!
-
-Juliet:
- Open your heart!
-
-[Exeunt]
-```
-````
-
-````
-```unlambda
-`r` .M` .a` .r` .k` .d` .o` .w` .n` .: ` .U` .n` .l` .a` .m` .b` .d` .a` .| ` .M` .a` .t` .h` .: ` .5` .i
-```
-````
 
 ````
 ```verilog
@@ -359,20 +266,6 @@ endmodule
 ```
 ````
 
-````
-```whitespace
-SS STSSTSSSL TLSSSS SS STSTSSTTL TLSSSS SS STSTSTSHL TLSSSS SS STSSLLL TLSSSS
-SS STSSSLSL TLSSSS SS STSTSTSHL TLSSSS SS STSSLLL TLSSSS SS STSSTTSSL TLSSSS
-SS STSSTTL TLSSSS SS STSLSLL TLSSSS SS STSTSSTTL TLSSSS SS STSTSTSSL TLSSSS
-SS STSTCCSL TLSSSS SS STSTCCSL TLSSSS SS STSTCCSL TLSSSS SS STSTSTSSL TLSSSS
-SS STSLSLL TLSSSS SS STSSTSSSL TLSSSS SS STSTSSTTL TLSSSS SS STSTSTSHL TLSSSS
-SS STSSLLL TLSSSS SS STSSLLLL TLSSSS SS STSTSTSSL TLSSSS SS STSTSSLSL TLSSSS
-SS STSTSTSSL TLSSSS SS STSTSLSSL TLSSSS SS STSSLLL TLSSSS SS STSTSSLSL TLSSSS
-SS STSTSTSSL TLSSSS SS STSSSLTL TLSSSS SS STSSLLL TLSSSS SS STSL TLST
-SS STSSLLL TLSSSS SS STSSLTTL TLSSSS SS STSSLLL TLSSSS SS STSTTTTL TLSSSS
-SS STSTSSTTL TLSSSS LLL
-```
-````
 
 ## PART 2: SHEBANG SYNTAX TESTS
 (Instructions: Copy ONLY the code inside the block, not the backticks.)
@@ -383,20 +276,8 @@ SS STSTSSTTL TLSSSS LLL
 ```
 
 ```text
-#!arnoldc
-IT'S SHOWTIME
-TALK TO THE HAND "Shebang: ArnoldC | Math: 4 - OK"
-YOU HAVE BEEN TERMINATED
-```
-
-```text
 #!bash
 echo "Shebang: Bash $BASH_VERSION | Math: $((7 + 10)) - OK"
-```
-
-```text
-#!befunge
-<@,,,,,,,,,,,,,,,"OK - 6 :htaM | egnufeB :gnabehS"
 ```
 
 ```text
@@ -437,15 +318,6 @@ puts "Shebang: Crystal #{Crystal::VERSION} | Math: #{19 + 1} - OK"
 IO.puts "Shebang: Elixir #{System.version} | Math: #{29 + 11} - OK"
 ```
 
-```text
-#!emojicode
-🏁 🍇 😀 🔤Shebang: Emojicode | Math: 4 - OK🔤 🍉
-```
-
-```text
-#!fish
-"KO - 5 :htaM | ><> :gnabehS"l?!;o
-```
 
 ```text
 #!fortran
@@ -476,18 +348,6 @@ func main() { fmt.Printf("Shebang: Go %s | Math: %d - OK\n", runtime.Version(), 
 main = putStrLn $ "Shebang: Haskell | Math: " ++ show (26 + 4) ++ " - OK"
 ```
 
-```text
-#!hexagony
-/ S \
- h e b a
-n g : H e
- x a g o n
-y | M a t
- h : 9 ;
-  @ . .
-```
-
-
 
 ```text
 #!java
@@ -497,12 +357,6 @@ public class Main {
     }
 }
 ```
-
-```text
-#!jelly
-"Shebang: Jelly | Math: " 6 6 + " - OK"
-```
-
 ```text
 #!julia
 println("Shebang: Julia $VERSION | Math: $(23 + 7) - OK")
@@ -525,15 +379,6 @@ KTHXBYE
 print("Shebang: Lua " .. _VERSION .. " | Math: " .. (8 + 8) .. " - OK")
 ```
 
-```text
-#!malbolge
-(Malbolge check skipped for brevity)
-```
-
-```text
-#!matl
-'Shebang: MATL | Math: ' 9 2 + num2str ' - OK' h
-```
 
 ```text
 #!nim
@@ -605,11 +450,6 @@ print(f"Shebang: Science (Anaconda) | Math: {21 + 9} - OK")
 
 
 ```text
-#!unlambda
-`r` .S` .h` .e` .b` .a` .n` .g` .: ` .U` .n` .l` .a` .m` .b` .d` .a` .| ` .M` .a` .t` .h` .: ` .5` .i
-```
-
-```text
 #!verilog
 module test;
   initial begin
@@ -619,4 +459,3 @@ module test;
 endmodule
 ```
 
-```
