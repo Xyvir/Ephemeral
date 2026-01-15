@@ -72,8 +72,6 @@ A test suite file is provided in the repo to demonstration the usage of the vari
 
 ## Features
 
-
-
 ### Manual Language Entry & History
 
 If you copy raw text without a language tag (e.g., no ` ```python `), Ephemeral will pop up a terminal window asking you to specify the language. 
@@ -104,6 +102,38 @@ Ephemeral downloads container images as needed. Over time, these can take up dis
 * **Right-click** the tray icon and select **"Clear Image Cache"**.
 * This runs a safe prune command (`podman image prune -a`) to delete all images not currently in use, freeing up space on your drive.
 
+### Artifacts & File Exports
+
+Ephemeral isn't just for text output. You can generate images, compile binaries, or create documents directly from your snippets.
+
+**How it works:**
+Any file your script saves to the **`/output`** directory inside the container is automatically captured:
+
+1.  **Images (Plots/Graphs):** If a single image (PNG, JPG, BMP) is generated, it is automatically converted to a bitmap and copied to your **Clipboard**, ready to paste immediately.
+2.  **Documents & Binaries:** If a non-image file is generated (e.g., PDF, DOCX, EXE), it is extracted and moved to your **Downloads** folder.
+3.  **Multiple Files:** If your script generates multiple files, they are automatically zipped into a timestamped archive and saved to **Downloads**.
+
+**Example (Python Plotting):**
+````
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Generate Data
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+# Create Plot
+plt.figure(figsize=(6, 4))
+plt.plot(x, y, label='Sine Wave', color='blue')
+plt.title("Generated via Ephemeral")
+plt.legend()
+plt.grid(True)
+
+# Save to /output to trigger auto-clipboard copy
+plt.savefig('/output/plot.png')
+```
+````
 
 ## Supported Languages
 
@@ -129,7 +159,5 @@ PROCEDURE DIVISION.
 
 
 ## Todo
-* Add Cobol support from esolang-box
-* **File Artifacts:** Add mechanism to retrieve arbitrary files (images, binaries) generated inside the container.
 * **Multi-Block Execution:** Support for running multiple sequential codeblocks found in a single clipboard copy.
 * **Seed Files:** Support for injecting data files (json, csv, etc.) into the container context before execution.
