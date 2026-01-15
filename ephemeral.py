@@ -68,6 +68,14 @@ LANG_MAP = {
     'perl':    {'image': 'perl:slim',      'cmd': ['perl', '-']},
     'php':     {'image': 'php:alpine',     'cmd': ['php']},
 
+    # --- Documents & Typesetting ---
+    # LaTeX: Uses pandoc/extra (contains pdflatex). Compiles to PDF in /output.
+    # FIXED: Added entrypoint override to bypass default 'pandoc' command
+    'latex':   {'image': 'pandoc/extra', 'entrypoint': '/bin/sh', 'cmd': ['-c', 'cat > /output/doc.tex && pdflatex -output-directory /output /output/doc.tex']},
+    # Pandoc: Converts Markdown to DOCX by default.
+    # FIXED: Added entrypoint override to bypass default 'pandoc' command
+    'pandoc':  {'image': 'pandoc/core', 'entrypoint': '/bin/sh', 'cmd': ['-c', 'cat > /tmp/input.md && pandoc /tmp/input.md -o /output/converted.docx']},
+
     # --- Windows-like Shells ---
     'pwsh':    {'image': 'mcr.microsoft.com/powershell', 'cmd': ['pwsh', '-NoProfile', '-NonInteractive', '-Command', '-']},
     
@@ -85,10 +93,12 @@ LANG_MAP = {
     'swipl': 'prolog', 'pl': 'prolog',
     'cr': 'crystal', 'nimrod': 'nim',
     'bf': 'brainfuck', 'spl': 'shakespeare', '><>': 'fish',
-    'cob': 'cobol', 'gnucobol': 'cobol'
+    'cob': 'cobol', 'gnucobol': 'cobol',
+    'tex': 'latex', 'pdflatex': 'latex',
+    'md': 'pandoc', 'markdown': 'pandoc', 'docx': 'pandoc'
 }
 
-# Add esolangs dynamically (Including COBOL now)
+# Add esolangs dynamically (Including COBOL now, EXCLUDING intercal)
 ESOLANGS = [
     '05ab1e', 'golfscript', 'lolcode', 'piet', 'cjam', 'cobol'
 ]
@@ -354,111 +364,4 @@ def run_container_piped(icon, config, code, lang):
             downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
             safe_lang = re.sub(r'[^a-zA-Z0-9]', '_', lang) if lang else "custom"
 
-            if len(files) == 0:
-                result = stdout
-                title_lang = lang.split()[0].capitalize() if lang else "Custom"
-                pyperclip.copy(f"Result ({title_lang}):\n---\n```text\n{result.strip()}\n```")
-                icon.notify(f"{title_lang} execution results copied to clipboard.", title="Ephemeral")
-            
-            elif len(files) == 1:
-                filename = files[0]
-                filepath = os.path.join(output_dir, filename)
-                
-                if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp')):
-                    if copy_image_to_clipboard(filepath):
-                        icon.notify("Image generated and copied to clipboard!", title="Ephemeral")
-                    else:
-                        icon.notify("Failed to copy image. Check debug.", title="Ephemeral Error")
-                else:
-                    # Single non-image -> Move to Downloads
-                    target_name = f"Ephemeral_{safe_lang}_{filename}"
-                    target_path = os.path.join(downloads_dir, target_name)
-                    
-                    base, ext = os.path.splitext(target_path)
-                    counter = 1
-                    while os.path.exists(target_path):
-                        target_path = f"{base}_{counter}{ext}"
-                        counter += 1
-                    
-                    shutil.move(filepath, target_path)
-                    icon.notify(f"File saved to Downloads:\n{os.path.basename(target_path)}", title="Ephemeral")
-
-            else:
-                # Multiple files -> Zip to Downloads
-                timestamp = int(time.time())
-                zip_base_name = f"Ephemeral_{safe_lang}_Artifacts_{timestamp}"
-                zip_base_path = os.path.join(downloads_dir, zip_base_name)
-                
-                final_zip = shutil.make_archive(zip_base_path, 'zip', output_dir)
-                icon.notify(f"Artifacts zipped to Downloads:\n{os.path.basename(final_zip)}", title="Ephemeral")
-        else:
-            full_error = f"Exit Code: {process.returncode}\n\nSTDERR:\n{stderr}\n\nSTDOUT:\n{stdout}"
-            show_post_mortem_error(full_error)
-            icon.notify("Execution Failed. Debug window opened.", title="Ephemeral Error")
-    except Exception as e:
-        show_post_mortem_error(f"System Exception:\n{str(e)}")
-        icon.notify("Critical System Error", title="Ephemeral Failed")
-    finally:
-        try:
-            for f in os.listdir(output_dir):
-                os.remove(os.path.join(output_dir, f))
-            os.rmdir(output_dir)
-        except: pass
-
-def run_logic(icon):
-    global LAST_DETECTED_LANG
-    content = get_clipboard()
-    if re.search(r"^Result \(.*\):[\r\n]+---[\r\n]+", content.strip(), re.MULTILINE):
-        icon.notify("Clipboard contains previous results. Execution halted.", title="Ephemeral Safety")
-        return
-    lang, code = parse_codeblock(content)
-    if not lang:
-        if content and content.strip():
-            code = strip_shebang(content)
-            code = re.sub(r"```+\s*$", "", code.rstrip())
-            user_input = prompt_user_for_language(LAST_DETECTED_LANG, code)
-            if user_input: lang = user_input.strip() 
-            else:
-                icon.notify("Execution cancelled.", title="Ephemeral")
-                return
-        else:
-             icon.notify("Clipboard is empty.", title="Ephemeral Error")
-             return
-    LAST_DETECTED_LANG = lang.split()[0]
-    config = resolve_runtime_config(lang)
-    if not config or not config.get('image'):
-        icon.notify("Configuration failed. Could not resolve image.", title="Ephemeral Error")
-        return
-    icon.notify(f"Launching {LAST_DETECTED_LANG}...", title="Ephemeral Status")
-    image_name = config['image']
-    is_cached = check_image_exists(image_name)
-    if not is_cached:
-        exit_code = perform_visible_pull(image_name)
-        if exit_code != 0:
-            icon.notify("Image download failed.", title="Ephemeral Error")
-            return
-    run_container_piped(icon, config, code, lang)
-
-def on_hotkey(icon):
-    threading.Thread(target=run_logic, args=(icon,)).start()
-
-def setup(icon):
-    icon.visible = True
-    def init_sequence(): ensure_podman_running(icon)
-    threading.Thread(target=init_sequence).start()
-    keyboard.add_hotkey(HOTKEY, lambda: on_hotkey(icon))
-
-def quit_app(icon, item):
-    stop_podman_machine(icon)
-    icon.stop()
-    sys.exit()
-
-if __name__ == '__main__':
-    image = create_icon_image()
-    menu = (
-        item('Run Clipboard', lambda icon, item: on_hotkey(icon), default=True),
-        item('Clear Image Cache', purge_cache),
-        item('Quit', quit_app)
-    )
-    icon = pystray.Icon("Ephemeral", image, "Ephemeral", menu)
-    icon.run(setup)
+            if len(files) ==
