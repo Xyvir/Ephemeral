@@ -404,7 +404,6 @@ def run_container_piped(icon, config, code, lang):
         
         # --- NETWORK LOGIC ---
         # If 'unsafe' is used, we trust Podman's default networking (no flags).
-        # This matches the successful terminal test.
         if config.get('allow_network', False):
             pass 
         else:
@@ -522,7 +521,29 @@ def on_hotkey(icon):
 
 def setup(icon):
     icon.visible = True
-    def init_sequence(): ensure_podman_running(icon)
+    
+    def init_sequence():
+        # 1. Start/Check Podman
+        ensure_podman_running(icon)
+        
+        # 2. File Association Handler (.eph)
+        # If argument passed (e.g. double-click), load content to clipboard and run
+        if len(sys.argv) > 1:
+            file_path = sys.argv[1]
+            if os.path.exists(file_path):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    pyperclip.copy(content)
+                    time.sleep(0.5) # Allow sync
+                    
+                    icon.notify(f"Loading {os.path.basename(file_path)}...", title="Ephemeral")
+                    run_logic(icon)
+                    
+                except Exception as e:
+                    icon.notify(f"Failed to load file: {e}", title="Ephemeral Error")
+
     threading.Thread(target=init_sequence).start()
     keyboard.add_hotkey(HOTKEY, lambda: on_hotkey(icon))
 
