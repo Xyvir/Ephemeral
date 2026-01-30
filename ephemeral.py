@@ -37,6 +37,20 @@ LANG_MAP = {
         'cmd': ['-c', 'cat > /tmp/build_script.sh && chmod +x /tmp/build_script.sh && /tmp/build_script.sh']
     },
 
+    # --- GitHub Actions / CI Tools ---
+    # 1. Runner Environment: Verify 'run:' scripts in the real environment.
+    # WARNING: This image is LARGE (~3GB).
+    'gh-runner': {
+        'image': 'catthehacker/ubuntu:act-22.04', 
+        'cmd': ['bash']
+    },
+    # 2. Linter: Verify YAML syntax.
+    'actionlint': {
+        'image': 'rhysd/actionlint:latest',
+        'entrypoint': '/bin/sh',
+        'cmd': ['-c', 'cat > /tmp/main.yml && actionlint /tmp/main.yml']
+    },
+
     # --- Science & Data ---
     'science': {'image': 'continuumio/anaconda3', 'cmd': ['python', '-']},
     'octave':  {'image': 'gnuoctave/octave:latest', 'cmd': ['octave', '--no-gui', '--quiet']},
@@ -104,7 +118,9 @@ LANG_MAP = {
     'cob': 'cobol', 'gnucobol': 'cobol',
     'tw': 'tiddlywiki', 'tw5': 'tiddlywiki', 'wiki': 'tiddlywiki',
     'tex': 'latex', 'pdflatex': 'latex',
-    'md': 'pandoc', 'markdown': 'pandoc'
+    'md': 'pandoc', 'markdown': 'pandoc',
+    'runner': 'gh-runner', 'ubuntu-latest': 'gh-runner',
+    'lint-action': 'actionlint'
 }
 
 # Add esolangs dynamically
